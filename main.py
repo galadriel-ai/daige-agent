@@ -4,7 +4,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from galadriel_agent.sdk.agent import GaladrielAgent
+from galadriel_agent.agent import GaladrielAgent
 
 if __name__ == "__main__":
     env_path = Path(".") / ".env"
@@ -12,5 +12,6 @@ if __name__ == "__main__":
     agent = GaladrielAgent(
         api_key=os.getenv("GALADRIEL_API_KEY"),
         agent_name="daige",
+        perplexity_api_key=os.getenv("PERPLEXITY_API_KEY"),
     )
     asyncio.run(agent.run())
