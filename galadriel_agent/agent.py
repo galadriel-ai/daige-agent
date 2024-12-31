@@ -1,3 +1,4 @@
+import asyncio
 import json
 import random
 from pathlib import Path
@@ -6,26 +7,12 @@ from typing import List
 from galadriel_agent.clients.galadriel import GaladrielClient
 from galadriel_agent.clients.perplexity import PerplexityClient
 from galadriel_agent.clients.twitter import TwitterClient
+from galadriel_agent.clients.twitter import TwitterCredentials
 from galadriel_agent.logging_utils import get_agent_logger
 from galadriel_agent.logging_utils import init_logging
 from galadriel_agent.models import AgentConfig
 
 logger = get_agent_logger()
-
-# TODO: Need to figure out what we want to put in the character file
-REQUIRED_FIELDS = [
-    "name",
-    "settings",
-    "system",
-    "bio",
-    "lore",
-    "adjectives",
-    "topics",
-    "style",
-    "goals_template",
-    "facts_template",
-    "knowledge",
-]
 
 PROMPT_TEMPLATE = """# Areas of Expertise
 {{knowledge}}
@@ -56,11 +43,18 @@ class GaladrielAgent:
     galadriel_client: GaladrielClient
     twitter_client: TwitterClient
 
+    post_interval_minutes_min: int
+    post_interval_minutes_max: int
+
+    # pylint: disable=R0917:
     def __init__(
         self,
         api_key: str,
         agent_name: str,
         perplexity_api_key: str,
+        twitter_credentials: TwitterCredentials,
+        post_interval_minutes_min: int = 90,
+        post_interval_minutes_max: int = 180,
     ):
         agent_path = Path("agents") / f"{agent_name}.json"
         with open(agent_path, "r", encoding="utf-8") as f:
@@ -69,7 +63,9 @@ class GaladrielAgent:
         init_logging(agent_dict.get("settings", {}).get("debug"))
 
         missing_fields: List[str] = [
-            field for field in REQUIRED_FIELDS if not agent_dict.get(field)
+            field
+            for field in AgentConfig.required_fields()
+            if not agent_dict.get(field)
         ]
         if missing_fields:
             raise KeyError(
@@ -80,15 +76,25 @@ class GaladrielAgent:
 
         self.galadriel_client = GaladrielClient(api_key=api_key)
         self.perplexity_client = PerplexityClient(perplexity_api_key)
-        # TODO:
-        self.twitter_client = TwitterClient()
+        self.twitter_client = TwitterClient(twitter_credentials)
+
+        self.post_interval_minutes_min = post_interval_minutes_min
+        self.post_interval_minutes_max = post_interval_minutes_max
 
     async def run(self):
         logger.info("Running agent!")
 
-        # TODO: event loop
-        # while True:
-        #     sleep (N minutes)
+        while True:
+            # TODO: need to check last tweet time and schedule sleep accordingly
+            await self._post_tweet()
+            sleep_time = random.randint(
+                self.post_interval_minutes_min,
+                self.post_interval_minutes_max,
+            )
+            logger.info(f"Next Tweet scheduled in {sleep_time} minutes.")
+            await asyncio.sleep(sleep_time * 60)
+
+    async def _post_tweet(self):
         prompt = await self._format_prompt()
         messages = [
             {"role": "system", "content": self.agent.system},
@@ -99,8 +105,10 @@ class GaladrielAgent:
         )
         if response and response.choices and response.choices[0].message:
             message = response.choices[0].message.content
-            is_success = await self.twitter_client.post_tweet(message)
-            print(is_success)
+            response = await self.twitter_client.post_tweet(message)
+            if tweet_id := (response and response.get("data", {}).get("id")):
+                logger.debug(f"Tweet ID: {tweet_id}")
+                # TODO: save topic, so we could exclude it for next tweets
         else:
             logger.error(
                 f"Unexpected API response from Galadriel: \n{response.to_json()}"
