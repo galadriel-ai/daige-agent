@@ -23,8 +23,8 @@ class AgentConfig:
     extra_fields: Dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_json(cls, data: dict):
-        known_fields = [
+    def required_fields(cls):
+        return [
             "name",
             "settings",
             "system",
@@ -38,10 +38,19 @@ class AgentConfig:
             "knowledge",
             "search_queries",
         ]
+
+    @classmethod
+    def from_json(cls, data: Dict):
         # Separate known fields and extra fields
-        kwargs = {key: value for key, value in data.items() if key in known_fields}
+        kwargs = {
+            key: value
+            for key, value in data.items()
+            if key in AgentConfig.required_fields()
+        }
         extra_fields = {
-            key: value for key, value in data.items() if key not in known_fields
+            key: value
+            for key, value in data.items()
+            if key not in AgentConfig.required_fields()
         }
         # Pass known fields to the dataclass, and store extra fields
         return cls(**kwargs, extra_fields=extra_fields)
