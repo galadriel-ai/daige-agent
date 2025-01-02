@@ -4,4 +4,5 @@
 venv/
 .mypy_cache/
 
+logs/
 data/
