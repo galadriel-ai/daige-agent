@@ -1,0 +1,90 @@
+import json
+import os
+from typing import Dict
+from typing import List
+from typing import Optional
+
+import aiofiles
+
+from galadriel_agent.logging_utils import get_agent_logger
+
+logger = get_agent_logger()
+
+TOPICS_FILE = "used_topics.json"
+TWEETS_FILE = "tweets.json"
+LATEST_TWEET_FILE = "latest_tweet.json"
+
+
+class DatabaseClient:
+    topics_file_path: str
+    max_topics_count: int
+
+    tweets_file_path: str
+
+    def __init__(self, data_dir: str = "data", max_topics_count: int = 5):
+        self.max_topics_count = max_topics_count
+        os.makedirs(data_dir, exist_ok=True)
+        self.topics_file_path = os.path.join(data_dir, TOPICS_FILE)
+        self.tweets_file_path = os.path.join(data_dir, TWEETS_FILE)
+        self.latest_tweet_file_path = os.path.join(data_dir, LATEST_TWEET_FILE)
+
+        if not os.path.exists(self.topics_file_path):
+            with open(self.topics_file_path, "w", encoding="utf-8") as f:
+                f.write(json.dumps([]))
+
+    async def get_latest_used_topics(self) -> List[str]:
+        try:
+            async with aiofiles.open(self.topics_file_path, "r", encoding="utf-8") as f:
+                content = await f.read()
+                return json.loads(content)
+        except Exception:
+            logger.error("Failed to get latest used topics", exc_info=True)
+            return []
+
+    async def add_topics(self, new_topics: List[str]):
+        try:
+            latest_topics = await self.get_latest_used_topics()
+            latest_topics.extend(new_topics)
+            latest_topics = latest_topics[self.max_topics_count * -1:]
+            async with aiofiles.open(self.topics_file_path, "w", encoding="utf-8") as f:
+                await f.write(json.dumps(latest_topics, indent=4))
+        except Exception:
+            logger.error("Failed to save latest used topics", exc_info=True)
+
+    async def get_tweets(self) -> List[str]:
+        try:
+            async with aiofiles.open(self.tweets_file_path, "r", encoding="utf-8") as f:
+                content = await f.read()
+                return json.loads(content)
+        except Exception:
+            logger.error("Failed to get tweets", exc_info=True)
+            return []
+
+    async def add_tweet_text(self, text: str):
+        try:
+            tweets = await self.get_tweets()
+            tweets.append(text)
+            async with aiofiles.open(self.tweets_file_path, "w", encoding="utf-8") as f:
+                await f.write(json.dumps(tweets, indent=4))
+        except Exception:
+            logger.error("Failed to save latest used topics", exc_info=True)
+
+    async def get_latest_tweet(self) -> Optional[Dict]:
+        try:
+            async with aiofiles.open(
+                self.latest_tweet_file_path, "r", encoding="utf-8"
+            ) as f:
+                content = await f.read()
+                return json.loads(content)
+        except Exception:
+            logger.error("Failed to get tweets", exc_info=True)
+            return None
+
+    async def add_latest_tweet(self, tweet: Dict):
+        try:
+            async with aiofiles.open(
+                self.latest_tweet_file_path, "w", encoding="utf-8"
+            ) as f:
+                await f.write(json.dumps(tweet, indent=4))
+        except Exception:
+            logger.error("Failed to save latest used topics", exc_info=True)
