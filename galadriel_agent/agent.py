@@ -4,6 +4,8 @@ import random
 from pathlib import Path
 from typing import List
 
+from galadriel_agent import utils
+from galadriel_agent.clients.database import DatabaseClient
 from galadriel_agent.clients.galadriel import GaladrielClient
 from galadriel_agent.clients.perplexity import PerplexityClient
 from galadriel_agent.clients.twitter import TwitterClient
@@ -42,6 +44,7 @@ class GaladrielAgent:
     perplexity_client: PerplexityClient
     galadriel_client: GaladrielClient
     twitter_client: TwitterClient
+    database_client: DatabaseClient
 
     post_interval_minutes_min: int
     post_interval_minutes_max: int
@@ -77,6 +80,7 @@ class GaladrielAgent:
         self.galadriel_client = GaladrielClient(api_key=api_key)
         self.perplexity_client = PerplexityClient(perplexity_api_key)
         self.twitter_client = TwitterClient(twitter_credentials)
+        self.database_client = DatabaseClient()
 
         self.post_interval_minutes_min = post_interval_minutes_min
         self.post_interval_minutes_max = post_interval_minutes_max
@@ -84,8 +88,26 @@ class GaladrielAgent:
     async def run(self):
         logger.info("Running agent!")
 
+        latest_tweet = await self.database_client.get_latest_tweet()
+        if last_tweet_timestamp := (latest_tweet and latest_tweet.get("timestamp")):
+            minutes_passed = int(
+                (utils.get_current_timestamp() - last_tweet_timestamp) / 60
+            )
+            if minutes_passed > self.post_interval_minutes_min:
+                logger.info(
+                    f"Last tweet happened {minutes_passed} minutes ago, generating new tweet immediately"
+                )
+            else:
+                sleep_time = random.randint(
+                    self.post_interval_minutes_min - minutes_passed,
+                    self.post_interval_minutes_max - minutes_passed,
+                )
+                logger.info(
+                    f"Last tweet happened {minutes_passed} minutes ago, waiting for {sleep_time} minutes"
+                )
+                await asyncio.sleep(sleep_time * 60)
+
         while True:
-            # TODO: need to check last tweet time and schedule sleep accordingly
             await self._post_tweet()
             sleep_time = random.randint(
                 self.post_interval_minutes_min,
@@ -108,7 +130,14 @@ class GaladrielAgent:
             response = await self.twitter_client.post_tweet(message)
             if tweet_id := (response and response.get("data", {}).get("id")):
                 logger.debug(f"Tweet ID: {tweet_id}")
-                # TODO: save topic, so we could exclude it for next tweets
+                await self.database_client.add_tweet_text(message)
+                await self.database_client.add_latest_tweet(
+                    {
+                        "id": tweet_id,
+                        "text": message,
+                        "timestamp": utils.get_current_timestamp(),
+                    }
+                )
         else:
             logger.error(
                 f"Unexpected API response from Galadriel: \n{response.to_json()}"
@@ -117,16 +146,15 @@ class GaladrielAgent:
     async def _format_prompt(self) -> str:
         # TODO: need to update prompt etc etc
         data = {
-            # TODO: knowledge?
-            "knowledge": "\n".join(self.agent.knowledge[:3]),
+            # TODO: knowledge is random
+            "knowledge": await self._get_formatted_knowledge(),
             "agent_name": self.agent.name,
             "twitter_user_name": self.agent.extra_fields.get("twitter_profile", {}).get(
                 "username", "user"
             ),
             "bio": self._get_formatted_bio(),
             "lore": self._get_formatted_lore(),
-            # TODO: is topics needed, also check that its not a recently used topic
-            "topics": self._get_formatted_topics(),
+            "topics": await self._get_formatted_topics(),
             "post_directions": self._get_formatted_post_directions(),
         }
 
@@ -147,6 +175,12 @@ class GaladrielAgent:
         logger.debug(f"Got full formatted prompt: \n{prompt}")
         return prompt
 
+    async def _get_formatted_knowledge(self):
+        shuffled_knowledge = random.sample(
+            self.agent.knowledge, len(self.agent.knowledge)
+        )
+        return "\n".join(shuffled_knowledge[:3])
+
     def _get_formatted_bio(self) -> str:
         bio = self.agent.bio
         return " ".join(random.sample(bio, min(len(bio), 3)))
@@ -157,11 +191,16 @@ class GaladrielAgent:
         selected_lore = shuffled_lore[:10]
         return "\n".join(selected_lore)
 
-    def _get_formatted_topics(self) -> str:
+    async def _get_formatted_topics(self) -> str:
         topics = self.agent.topics
-        shuffled_topics = random.sample(topics, len(topics))
+        recently_used_topics = await self.database_client.get_latest_used_topics()
+        available_topics = [
+            topic for topic in topics if topic not in recently_used_topics
+        ]
+        shuffled_topics = random.sample(available_topics, len(available_topics))
 
         selected_topics = shuffled_topics[:5]
+        await self.database_client.add_topics(selected_topics)
 
         formatted_topics = ""
         for index, topic in enumerate(selected_topics):

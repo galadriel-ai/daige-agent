@@ -43,7 +43,7 @@ class TwitterClient:
     async def post_tweet(self, message: str) -> Optional[Dict]:
         if os.getenv("DRY_RUN"):
             logger.info(f"Would have posted tweet: {message}")
-            return None
+            return {"data": {"id": "dry_run"}}
         response = await self._make_request("POST", "tweets", json={"text": message})
         logger.info(f"Tweet posted successfully: {message}")
         return response

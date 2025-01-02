@@ -1,14 +1,16 @@
+import asyncio
 from typing import Iterable
 from typing import Optional
 
 from openai import AsyncOpenAI
-
-from openai.types.chat.chat_completion_message_param import ChatCompletionMessageParam
 from openai.types.chat.chat_completion import ChatCompletion
+from openai.types.chat.chat_completion_message_param import ChatCompletionMessageParam
 
 from galadriel_agent.logging_utils import get_agent_logger
 
 logger = get_agent_logger()
+
+RETRY_COUNT: int = 3
 
 
 class GaladrielClient:
@@ -23,10 +25,13 @@ class GaladrielClient:
     async def completion(
         self, model: str, messages: Iterable[ChatCompletionMessageParam]
     ) -> Optional[ChatCompletion]:
-        try:
-            return await self.client.chat.completions.create(
-                model=model, messages=messages
-            )
-        except Exception as e:
-            logger.error("Error calling Galadriel completions API", e)
+        for i in range(RETRY_COUNT):
+            try:
+                return await self.client.chat.completions.create(
+                    model=model, messages=messages
+                )
+            except Exception as e:
+                logger.error("Error calling Galadriel completions API", e)
+            # Retry after 4 * i seconds
+            await asyncio.sleep(int(min(60, 4**i)))
         return None

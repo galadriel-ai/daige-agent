@@ -1,3 +1,7 @@
+.idea/
+
 .env
 venv/
 .mypy_cache/
+
+data/
