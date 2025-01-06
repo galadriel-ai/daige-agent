@@ -44,9 +44,7 @@ class DatabaseClient:
 
     async def get_latest_used_topics(self) -> List[str]:
         try:
-            async with aiofiles.open(self.topics_file_path, "r", encoding="utf-8") as f:
-                content = await f.read()
-                return json.loads(content)
+            return await _read_json_list(self.topics_file_path)
         except Exception:
             logger.error("Failed to get latest used topics", exc_info=True)
             return []
@@ -63,9 +61,7 @@ class DatabaseClient:
 
     async def get_tweets(self) -> List[str]:
         try:
-            async with aiofiles.open(self.tweets_file_path, "r", encoding="utf-8") as f:
-                content = await f.read()
-                return json.loads(content)
+            return await _read_json_list(self.tweets_file_path)
         except Exception:
             logger.error("Failed to get tweets", exc_info=True)
             return []
@@ -81,11 +77,7 @@ class DatabaseClient:
 
     async def get_latest_tweet(self) -> Optional[Dict]:
         try:
-            async with aiofiles.open(
-                self.latest_tweet_file_path, "r", encoding="utf-8"
-            ) as f:
-                content = await f.read()
-                return json.loads(content)
+            return await _read_json_dict(self.latest_tweet_file_path)
         except Exception:
             logger.error("Failed to get tweets", exc_info=True)
             return None
@@ -106,11 +98,7 @@ class DatabaseClient:
             )
             return []
         try:
-            async with aiofiles.open(
-                self.search_topics_file_path, "r", encoding="utf-8"
-            ) as f:
-                content = await f.read()
-                return json.loads(content)
+            return await _read_json_list(self.search_topics_file_path)
         except Exception:
             logger.error("Failed to get latest search topics", exc_info=True)
             return []
@@ -126,3 +114,15 @@ class DatabaseClient:
                 await f.write(json.dumps(latest_topics, indent=4))
         except Exception:
             logger.error("Failed to save search topic", exc_info=True)
+
+
+async def _read_json_list(file_path: str) -> List[str]:
+    async with aiofiles.open(file_path, "r", encoding="utf-8") as f:
+        content = await f.read()
+        return json.loads(content)
+
+
+async def _read_json_dict(file_path: str) -> Dict:
+    async with aiofiles.open(file_path, "r", encoding="utf-8") as f:
+        content = await f.read()
+        return json.loads(content)
