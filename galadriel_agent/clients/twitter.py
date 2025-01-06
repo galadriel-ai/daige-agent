@@ -1,6 +1,7 @@
 import os
 from dataclasses import dataclass
 from typing import Dict
+from typing import List
 from typing import Literal
 from typing import Optional
 
@@ -17,6 +18,21 @@ class TwitterCredentials:
     consumer_api_secret: str
     access_token: str
     access_token_secret: str
+
+
+@dataclass
+class SearchResult:
+    id: str
+    username: str
+    text: str
+    retweet_count: int
+    reply_count: int
+    like_count: int
+    quote_count: int
+    bookmark_count: int
+    impression_count: int
+    # Is this needed?
+    referenced_tweets: List[Dict]
 
 
 class TwitterConnectionError(Exception):
@@ -47,6 +63,61 @@ class TwitterClient:
         response = await self._make_request("POST", "tweets", json={"text": message})
         logger.info(f"Tweet posted successfully: {message}")
         return response
+
+    async def get_timeline(self):
+        params = {
+            "tweet.fields": "created_at,author_id,referenced_tweets,attachments",
+            "expansions": "author_id",
+            "user.fields": "name,username",
+            "max_results": 100
+        }
+        response = await self._make_request(
+            "GET",
+            "users/1867138074271944704/timelines/reverse_chronological",
+            params=params
+        )
+        return response
+
+    async def search(self) -> List[SearchResult]:
+        try:
+            # TODO: uncomment
+            # response = await self._make_request(
+            #     "GET",
+            #     "tweets/search/recent",
+            #     params={
+            #         "tweet.fields": "public_metrics,text,author_id,referenced_tweets,attachments",
+            #         "expansions": "author_id",
+            #         "user.fields": "name,username",
+            #         "max_results": 100,
+            #         "query": "cybertruck"
+            #     }
+            # )
+            import json
+            with open("search.json", "r", encoding="utf-8") as f:
+                response = json.loads(f.read())
+
+            formatted_results: List[SearchResult] = []
+            for result in response.get("data", []):
+                public_metrics = result.get("public_metrics", {})
+                matching_users = [user for user in response["includes"]["users"] if user["id"] == result["author_id"]]
+                if matching_users:
+                    formatted_results.append(SearchResult(
+                        id=result["id"],
+                        username=matching_users[0]["username"],
+                        text=result["text"],
+                        retweet_count=public_metrics.get("retweet_count", 0),
+                        reply_count=public_metrics.get("reply_count", 0),
+                        like_count=public_metrics.get("like_count", 0),
+                        quote_count=public_metrics.get("quote_count", 0),
+                        bookmark_count=public_metrics.get("bookmark_count", 0),
+                        impression_count=public_metrics.get("impression_count", 0),
+                        # # Is this needed?
+                        referenced_tweets=result.get("referenced_tweets", [])
+                    ))
+            return formatted_results
+        except:
+            logger.error("Error searching tweets", exc_info=True)
+            return []
 
     async def _make_request(
         self, method: Literal["GET", "POST"], endpoint: str, **kwargs
