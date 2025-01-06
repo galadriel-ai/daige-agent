@@ -13,6 +13,7 @@ from galadriel_agent.clients.twitter import TwitterCredentials
 from galadriel_agent.logging_utils import get_agent_logger
 from galadriel_agent.logging_utils import init_logging
 from galadriel_agent.models import AgentConfig
+from galadriel_agent.prompts import get_search_query
 
 logger = get_agent_logger()
 
@@ -158,9 +159,9 @@ class GaladrielAgent:
             "post_directions": self._get_formatted_post_directions(),
         }
 
-        perplexity_result = await self.perplexity_client.search_topic(
-            random.choice(self.agent.search_queries)
-        )
+        # Ideally this would not write to DB, but instead only write after successful run?
+        search_query = await get_search_query.execute(self.agent, self.database_client)
+        perplexity_result = await self.perplexity_client.search_topic(search_query)
         if perplexity_result:
             data["perplexity_content"] = perplexity_result.content
             data["perplexity_sources"] = perplexity_result.sources
