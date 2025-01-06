@@ -22,6 +22,7 @@ class PerplexityClient:
         self.api_key = api_key
 
     async def search_topic(self, topic: str) -> Optional[PerplexitySources]:
+        logger.info(f"Using perplexity API with search query: {topic}")
         url = "https://api.perplexity.ai/chat/completions"
         headers = {
             "Content-Type": "application/json",

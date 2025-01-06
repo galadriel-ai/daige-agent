@@ -139,106 +139,156 @@
       "daige"
     ]
   },
-  "search_queries": [
-    "Top trending OpenAI news? One snippet only.",
-    "Any big OpenAI announcements? Provide one highlight.",
-    "Latest OpenAI model updates? Summarize in one line.",
-    "OpenAI in the headlines today? One short mention needed.",
-    "Sam Altman's most recent statement? Summarize in one line.",
-    "Any major Sam Altman interview trending? One snippet only.",
-    "Sam Altman's biggest news today? One short highlight.",
-    "Any new controversies or achievements by Sam Altman? Provide one update.",
-    "Cybertruck release date updates? One quick snippet, please.",
-    "Any Cybertruck design changes? Summarize in one line.",
-    "Is Cybertruck in final production? One short mention.",
-    "Any big Cybertruck buzz on social? One snippet only.",
-    "Latest in virtual reality tech? One short highlight.",
-    "Any major VR device launches today? Summarize in one line.",
-    "Is VR trending on social platforms? One snippet, please.",
-    "Biggest VR advancement this week? One quick mention.",
-    "Top AI startup making headlines? Provide one snippet.",
-    "Any major AI startup funding news? Summarize in one line.",
-    "Newest AI startup acquisition rumor? One highlight only.",
-    "Biggest AI startup success story? One short mention.",
-    "Trending science discovery? One snippet, please.",
-    "Any major breakthrough in science this week? Summarize in one line.",
-    "Top science article trending now? One short highlight.",
-    "Most talked-about science topic today? One quick mention.",
-    "Any fresh Elon Musk news? One snippet only.",
-    "Top Elon Musk tweet? Provide one short highlight.",
-    "Is Elon announcing something new? Summarize in one line.",
-    "Biggest Elon update from the web today? One mention, please.",
-    "New SpaceX achievements? One short snippet.",
-    "Any SpaceX launch updates? Summarize in one line.",
-    "SpaceX trending on social? One highlight only.",
-    "Is Starship in the news again? One quick mention.",
-    "NASA's biggest story this week? One snippet only.",
-    "Any NASA mission updates? Summarize in one line.",
-    "Is NASA revealing new data? One short highlight.",
-    "NASA's next launch date? One quick mention needed.",
-    "Any new alien sightings? One snippet, please.",
-    "Trending alien conspiracy? Summarize in one line.",
-    "Biggest UFO or alien headline? One short highlight.",
-    "Any official statements about aliens? One mention only.",
-    "Latest findings about URANUS? One snippet.",
-    "Any space probe updates on URANUS? Summarize in one line.",
-    "URANUS mission in the works? One short highlight.",
-    "Top URANUS discovery trending now? One mention only.",
-    "Biggest Doge news today? One short snippet.",
-    "Is Doge surging or dipping? Summarize in one line.",
-    "Any Doge-related tweet from Elon? One highlight.",
-    "Doge adoption updates? One quick mention only.",
-    "Tesla's top headline right now? One snippet, please.",
-    "Any Tesla vehicle announcements? Summarize in one line.",
-    "Major Tesla stock movement? One short highlight.",
-    "Tesla Autopilot updates? One mention only.",
-    "Top AI news today? One snippet needed.",
-    "Any major AI breakthroughs? Summarize in one line.",
-    "New AI controversies or debates? One short highlight.",
-    "Biggest AI trend on social? One quick mention only.",
-    "Latest GPU trends? One snippet, please.",
-    "Any hot GPU release? Summarize in one line.",
-    "GPU performance breakthroughs? One short highlight.",
-    "Top GPU brand update? One quick mention.",
-    "Any major Nvidia product news? One snippet only.",
-    "Nvidia stock moving? Summarize in one line.",
-    "New Nvidia GPU rumors? One short highlight.",
-    "Nvidia's big partnership? One quick mention.",
-    "Top robotics innovation? One snippet, please.",
-    "Any robotics launch event? Summarize in one line.",
-    "Biggest robotics breakthrough? One short highlight.",
-    "Trending robotics product demo? One quick mention.",
-    "Space exploration's top story? One snippet.",
-    "Any space travel breakthroughs? Summarize in one line.",
-    "Commercial spaceflight updates? One short highlight.",
-    "Biggest cosmic discovery right now? One mention only.",
-    "Latest news on X.com? One snippet, please.",
-    "Any X.com feature changes? Summarize in one line.",
-    "X.com user growth spiking? One short highlight.",
-    "Big X.com announcements? One quick mention.",
-    "Crypto market's top story? One snippet only.",
-    "Is Bitcoin surging or dropping? Summarize in one line.",
-    "Major altcoin news? One short highlight.",
-    "Crypto regulation trending? One quick mention.",
-    "Any big Web3 buzz right now? One snippet, please.",
-    "Web3 startups raising funds? Summarize in one line.",
-    "Metaverse or Web3 news? One short highlight.",
-    "Top Web3 project trending? One quick mention.",
-    "Biggest a16z investment news? One snippet only.",
-    "Any new a16z funding announcements? Summarize in one line.",
-    "a16z's tech highlights this week? One short highlight.",
-    "Is a16z backing new AI ventures? One quick mention.",
-    "Marc Andreessen on technology? One snippet, please.",
-    "Any new statements from Marc Andreessen? Summarize in one line.",
-    "Marc Andreessen interview highlights? One short highlight.",
-    "Marc Andreessen's tech predictions? One quick mention.",
-    "Top AI agents development? One snippet only.",
-    "Any new AI agent breakthroughs? Summarize in one line.",
-    "AI agents changing industries? One short highlight.",
-    "Biggest controversy around AI agents? One mention, please.",
-    "Latest self-driving cars milestone? One snippet needed.",
-    "Any big self-driving car company updates? Summarize in one line.",
-    "Self-driving car regulations trending? One short highlight.",
-    "Biggest self-driving car advancement? One quick mention."
-  ]
+  "search_queries": {
+    "OpenAI": [
+      "Top trending OpenAI news? One snippet only.",
+      "Any big OpenAI announcements? Provide one highlight.",
+      "Latest OpenAI model updates? Summarize in one line.",
+      "OpenAI in the headlines today? One short mention needed."
+    ],
+    "Sam Altman": [
+      "Sam Altman's most recent statement? Summarize in one line.",
+      "Any major Sam Altman interview trending? One snippet only.",
+      "Sam Altman's biggest news today? One short highlight.",
+      "Any new controversies or achievements by Sam Altman? Provide one update."
+    ],
+    "Cybertruck": [
+      "Cybertruck release date updates? One quick snippet, please.",
+      "Any Cybertruck design changes? Summarize in one line.",
+      "Is Cybertruck in final production? One short mention.",
+      "Any big Cybertruck buzz on social? One snippet only."
+    ],
+    "Virtual Reality": [
+      "Latest in virtual reality tech? One short highlight.",
+      "Any major VR device launches today? Summarize in one line.",
+      "Is VR trending on social platforms? One snippet, please.",
+      "Biggest VR advancement this week? One quick mention."
+    ],
+    "AI Startups": [
+      "Top AI startup making headlines? Provide one snippet.",
+      "Any major AI startup funding news? Summarize in one line.",
+      "Newest AI startup acquisition rumor? One highlight only.",
+      "Biggest AI startup success story? One short mention."
+    ],
+    "Science": [
+      "Trending science discovery? One snippet, please.",
+      "Any major breakthrough in science this week? Summarize in one line.",
+      "Top science article trending now? One short highlight.",
+      "Most talked-about science topic today? One quick mention."
+    ],
+    "Elon Musk": [
+      "Any fresh Elon Musk news? One snippet only.",
+      "Top Elon Musk tweet? Provide one short highlight.",
+      "Is Elon announcing something new? Summarize in one line.",
+      "Biggest Elon update from the web today? One mention, please."
+    ],
+    "SpaceX": [
+      "New SpaceX achievements? One short snippet.",
+      "Any SpaceX launch updates? Summarize in one line.",
+      "SpaceX trending on social? One highlight only.",
+      "Is Starship in the news again? One quick mention."
+    ],
+    "NASA": [
+      "NASA's biggest story this week? One snippet only.",
+      "Any NASA mission updates? Summarize in one line.",
+      "Is NASA revealing new data? One short highlight.",
+      "NASA's next launch date? One quick mention needed."
+    ],
+    "Aliens": [
+      "Any new alien sightings? One snippet, please.",
+      "Trending alien conspiracy? Summarize in one line.",
+      "Biggest UFO or alien headline? One short highlight.",
+      "Any official statements about aliens? One mention only."
+    ],
+    "Uranus": [
+      "Latest findings about URANUS? One snippet.",
+      "Any space probe updates on URANUS? Summarize in one line.",
+      "URANUS mission in the works? One short highlight.",
+      "Top URANUS discovery trending now? One mention only."
+    ],
+    "Doge": [
+      "Biggest Doge news today? One short snippet.",
+      "Is Doge surging or dipping? Summarize in one line.",
+      "Any Doge-related tweet from Elon? One highlight.",
+      "Doge adoption updates? One quick mention only."
+    ],
+    "Tesla": [
+      "Tesla's top headline right now? One snippet, please.",
+      "Any Tesla vehicle announcements? Summarize in one line.",
+      "Major Tesla stock movement? One short highlight.",
+      "Tesla Autopilot updates? One mention only."
+    ],
+    "AI": [
+      "Top AI news today? One snippet needed.",
+      "Any major AI breakthroughs? Summarize in one line.",
+      "New AI controversies or debates? One short highlight.",
+      "Biggest AI trend on social? One quick mention only."
+    ],
+    "GPUs": [
+      "Latest GPU trends? One snippet, please.",
+      "Any hot GPU release? Summarize in one line.",
+      "GPU performance breakthroughs? One short highlight.",
+      "Top GPU brand update? One quick mention."
+    ],
+    "Nvidia": [
+      "Any major Nvidia product news? One snippet only.",
+      "Nvidia stock moving? Summarize in one line.",
+      "New Nvidia GPU rumors? One short highlight.",
+      "Nvidia's big partnership? One quick mention."
+    ],
+    "Robotics": [
+      "Top robotics innovation? One snippet, please.",
+      "Any robotics launch event? Summarize in one line.",
+      "Biggest robotics breakthrough? One short highlight.",
+      "Trending robotics product demo? One quick mention."
+    ],
+    "Space Exploration": [
+      "Space exploration's top story? One snippet.",
+      "Any space travel breakthroughs? Summarize in one line.",
+      "Commercial spaceflight updates? One short highlight.",
+      "Biggest cosmic discovery right now? One mention only."
+    ],
+    "X.com": [
+      "Latest news on X.com? One snippet, please.",
+      "Any X.com feature changes? Summarize in one line.",
+      "X.com user growth spiking? One short highlight.",
+      "Big X.com announcements? One quick mention."
+    ],
+    "Crypto": [
+      "Crypto market's top story? One snippet only.",
+      "Is Bitcoin surging or dropping? Summarize in one line.",
+      "Major altcoin news? One short highlight.",
+      "Crypto regulation trending? One quick mention."
+    ],
+    "Web3": [
+      "Any big Web3 buzz right now? One snippet, please.",
+      "Web3 startups raising funds? Summarize in one line.",
+      "Metaverse or Web3 news? One short highlight.",
+      "Top Web3 project trending? One quick mention."
+    ],
+    "a16z": [
+      "Biggest a16z investment news? One snippet only.",
+      "Any new a16z funding announcements? Summarize in one line.",
+      "a16z's tech highlights this week? One short highlight.",
+      "Is a16z backing new AI ventures? One quick mention."
+    ],
+    "Marc Andreessen": [
+      "Marc Andreessen on technology? One snippet, please.",
+      "Any new statements from Marc Andreessen? Summarize in one line.",
+      "Marc Andreessen interview highlights? One short highlight.",
+      "Marc Andreessen's tech predictions? One quick mention."
+    ],
+    "AI Agents": [
+      "Top AI agents development? One snippet only.",
+      "Any new AI agent breakthroughs? Summarize in one line.",
+      "AI agents changing industries? One short highlight.",
+      "Biggest controversy around AI agents? One mention, please."
+    ],
+    "Self-Driving Cars": [
+      "Latest self-driving cars milestone? One snippet needed.",
+      "Any big self-driving car company updates? Summarize in one line.",
+      "Self-driving car regulations trending? One short highlight.",
+      "Biggest self-driving car advancement? One quick mention."
+    ]
+  }
 }
