@@ -13,20 +13,30 @@ logger = get_agent_logger()
 TOPICS_FILE = "used_topics.json"
 TWEETS_FILE = "tweets.json"
 LATEST_TWEET_FILE = "latest_tweet.json"
+SEARCH_TOPICS_FILE = "used_search_topics.json"
 
 
 class DatabaseClient:
     topics_file_path: str
     max_topics_count: int
+    max_search_topics_count: int
 
     tweets_file_path: str
 
-    def __init__(self, data_dir: str = "data", max_topics_count: int = 5):
+    def __init__(
+        self,
+        data_dir: str = "data",
+        max_topics_count: int = 5,
+        max_search_topics_count: int = 7,
+    ):
         self.max_topics_count = max_topics_count
+        self.max_search_topics_count = max_search_topics_count
+
         os.makedirs(data_dir, exist_ok=True)
         self.topics_file_path = os.path.join(data_dir, TOPICS_FILE)
         self.tweets_file_path = os.path.join(data_dir, TWEETS_FILE)
         self.latest_tweet_file_path = os.path.join(data_dir, LATEST_TWEET_FILE)
+        self.search_topics_file_path = os.path.join(data_dir, SEARCH_TOPICS_FILE)
 
         if not os.path.exists(self.topics_file_path):
             with open(self.topics_file_path, "w", encoding="utf-8") as f:
@@ -45,7 +55,7 @@ class DatabaseClient:
         try:
             latest_topics = await self.get_latest_used_topics()
             latest_topics.extend(new_topics)
-            latest_topics = latest_topics[self.max_topics_count * -1:]
+            latest_topics = latest_topics[self.max_topics_count * -1 :]
             async with aiofiles.open(self.topics_file_path, "w", encoding="utf-8") as f:
                 await f.write(json.dumps(latest_topics, indent=4))
         except Exception:
@@ -88,3 +98,31 @@ class DatabaseClient:
                 await f.write(json.dumps(tweet, indent=4))
         except Exception:
             logger.error("Failed to save latest used topics", exc_info=True)
+
+    async def get_latest_search_topics(self) -> List[str]:
+        if not os.path.exists(self.search_topics_file_path):
+            logger.info(
+                "Latest search topics file does not exist, returning an empty list"
+            )
+            return []
+        try:
+            async with aiofiles.open(
+                self.search_topics_file_path, "r", encoding="utf-8"
+            ) as f:
+                content = await f.read()
+                return json.loads(content)
+        except Exception:
+            logger.error("Failed to get latest search topics", exc_info=True)
+            return []
+
+    async def add_latest_search_topic(self, topic: str) -> None:
+        try:
+            previous_topics = await self.get_latest_search_topics()
+            previous_topics.append(topic)
+            latest_topics = previous_topics[self.max_search_topics_count * -1 :]
+            async with aiofiles.open(
+                self.search_topics_file_path, "w", encoding="utf-8"
+            ) as f:
+                await f.write(json.dumps(latest_topics, indent=4))
+        except Exception:
+            logger.error("Failed to save search topic", exc_info=True)

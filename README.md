@@ -17,11 +17,30 @@ This takes the agent definition from `agents/daige.json`
 ```shell
 python main.py
 ```
+Can also run in docker
+```shell
+docker compose up --build
+```
 
 
 ## Linting etc
 ```shell
-black galadriel_agent
-mypy galadriel_agent
-pylint --rcfile=setup.cfg galadriel_agent/*
+source toolbox.sh
+lint
+format
+type-check
+```
+
+## Testing
+Ensure that dev dependencies are installed
+```shell
+source toolbox.sh
+unit-test
+```
+
+
+## Deployment
+
+```shell
+./deploy.sh
 ```

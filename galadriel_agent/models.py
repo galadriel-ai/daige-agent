@@ -18,7 +18,7 @@ class AgentConfig:
     goals_template: List[str]
     facts_template: List[str]
     knowledge: List[str]
-    search_queries: List[str]
+    search_queries: Dict[str, List[str]]
 
     extra_fields: Dict[str, Any] = field(default_factory=dict)
 
