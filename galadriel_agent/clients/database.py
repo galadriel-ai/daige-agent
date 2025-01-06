@@ -3,6 +3,7 @@ import os
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Union
 
 import aiofiles
 
@@ -38,10 +39,6 @@ class DatabaseClient:
         self.latest_tweet_file_path = os.path.join(data_dir, LATEST_TWEET_FILE)
         self.search_topics_file_path = os.path.join(data_dir, SEARCH_TOPICS_FILE)
 
-        if not os.path.exists(self.topics_file_path):
-            with open(self.topics_file_path, "w", encoding="utf-8") as f:
-                f.write(json.dumps([]))
-
     async def get_latest_used_topics(self) -> List[str]:
         try:
             return await _read_json_list(self.topics_file_path)
@@ -49,13 +46,12 @@ class DatabaseClient:
             logger.error("Failed to get latest used topics", exc_info=True)
             return []
 
-    async def add_topics(self, new_topics: List[str]):
+    async def add_topics(self, new_topics: List[str]) -> None:
         try:
             latest_topics = await self.get_latest_used_topics()
             latest_topics.extend(new_topics)
             latest_topics = latest_topics[self.max_topics_count * -1 :]
-            async with aiofiles.open(self.topics_file_path, "w", encoding="utf-8") as f:
-                await f.write(json.dumps(latest_topics, indent=4))
+            await _write_json(self.topics_file_path, latest_topics)
         except Exception:
             logger.error("Failed to save latest used topics", exc_info=True)
 
@@ -66,12 +62,11 @@ class DatabaseClient:
             logger.error("Failed to get tweets", exc_info=True)
             return []
 
-    async def add_tweet_text(self, text: str):
+    async def add_tweet_text(self, text: str) -> None:
         try:
             tweets = await self.get_tweets()
             tweets.append(text)
-            async with aiofiles.open(self.tweets_file_path, "w", encoding="utf-8") as f:
-                await f.write(json.dumps(tweets, indent=4))
+            await _write_json(self.tweets_file_path, tweets)
         except Exception:
             logger.error("Failed to save latest used topics", exc_info=True)
 
@@ -82,12 +77,9 @@ class DatabaseClient:
             logger.error("Failed to get tweets", exc_info=True)
             return None
 
-    async def add_latest_tweet(self, tweet: Dict):
+    async def add_latest_tweet(self, tweet: Dict) -> None:
         try:
-            async with aiofiles.open(
-                self.latest_tweet_file_path, "w", encoding="utf-8"
-            ) as f:
-                await f.write(json.dumps(tweet, indent=4))
+            await _write_json(self.latest_tweet_file_path, tweet)
         except Exception:
             logger.error("Failed to save latest used topics", exc_info=True)
 
@@ -108,10 +100,7 @@ class DatabaseClient:
             previous_topics = await self.get_latest_search_topics()
             previous_topics.append(topic)
             latest_topics = previous_topics[self.max_search_topics_count * -1 :]
-            async with aiofiles.open(
-                self.search_topics_file_path, "w", encoding="utf-8"
-            ) as f:
-                await f.write(json.dumps(latest_topics, indent=4))
+            await _write_json(self.search_topics_file_path, latest_topics)
         except Exception:
             logger.error("Failed to save search topic", exc_info=True)
 
@@ -126,3 +115,8 @@ async def _read_json_dict(file_path: str) -> Dict:
     async with aiofiles.open(file_path, "r", encoding="utf-8") as f:
         content = await f.read()
         return json.loads(content)
+
+
+async def _write_json(file_path: str, content: Union[List, Dict]) -> None:
+    async with aiofiles.open(file_path, "w", encoding="utf-8") as f:
+        await f.write(json.dumps(content, indent=4))
