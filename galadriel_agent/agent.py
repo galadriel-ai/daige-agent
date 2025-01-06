@@ -50,17 +50,9 @@ PROMPT_QUOTE_TEMPLATE = """
 
 {{post_directions}}
 
-# Additional Behavior Guidelines:
-- When presented with a choice or asked to decide between options, attempt to make a clear and decisive decision in line with {{agent_name}}'s persona and expertise.
-- When asked for in-depth explanations, provide detailed and comprehensive responses that align with {{agent_name}}'s areas of expertise and knowledge.
-
 # Task: Generate a post/reply in the voice, style and perspective of {{agent_name}} (@{{twitter_user_name}}) while using the thread of tweets as additional context:
 
 Thread of Tweets You Are Replying To:
-{{quote}}
-
-
-# Task: Generate a post in the voice, style and perspective of {{agent_name}} (@{{twitter_user_name}}):
 {{quote}}
 """
 
@@ -136,8 +128,7 @@ class GaladrielAgent:
 
         while True:
             # TODO: when to call which one
-            # await self._post_tweet()
-            await self._post_reply()
+            await self._post_tweet()
             sleep_time = random.randint(
                 self.post_interval_minutes_min,
                 self.post_interval_minutes_max,
@@ -146,6 +137,11 @@ class GaladrielAgent:
             await asyncio.sleep(sleep_time * 60)
 
     async def _post_tweet(self):
+        # TODO: 40% of the time call _post_reply
+        # await self._post_perplexity_tweet()
+        await self._post_reply()
+
+    async def _post_perplexity_tweet(self):
         prompt = await self._format_post_prompt()
         messages = [
             {"role": "system", "content": self.agent.system},
@@ -175,26 +171,16 @@ class GaladrielAgent:
     async def _post_reply(self) -> bool:
         # TODO: what kind of search etc we want to use here?
         results = await self.twitter_client.search()
-        sorted_results = sorted(
-            results,
-            key=lambda r: (
-                r.retweet_count +
-                r.reply_count +
-                r.like_count +
-                r.quote_count +
-                r.bookmark_count +
-                r.impression_count
-            ),
-            reverse=True,
-        )
+
         # no_reference_tweets = [tweet for tweet in sorted_results if not tweet.referenced_tweets]
-        if not len(sorted_results):
+        filtered_tweets = [tweet for tweet in results if ("https:" not in tweet.text and tweet.attachments is None)]
+        if not len(filtered_tweets):
             logger.info("No relevant tweets found, skipping")
             return False
 
-        quote_url = f"https://x.com/{sorted_results[0].username}/status/{sorted_results[0].id}"
+        quote_url = f"https://x.com/{filtered_tweets[0].username}/status/{filtered_tweets[0].id}"
         prompt = await self._format_reply_prompt(
-            sorted_results[0].text,
+            filtered_tweets[0].text,
             quote_url,
         )
         messages = [
@@ -204,7 +190,7 @@ class GaladrielAgent:
         response = await self.galadriel_client.completion(
             self.agent.settings.get("model", "gpt-4o"), messages
         )
-        # TODO: need to clear potential hallucinated urls from the message
+        # TODO: need to clear potential hallucinated urls from the message?
         # Eg one example had https://t.co/.. some random url in the response
         if response and response.choices and response.choices[0].message:
             message = response.choices[0].message.content + " " + quote_url
@@ -220,10 +206,12 @@ class GaladrielAgent:
                         "timestamp": utils.get_current_timestamp(),
                     }
                 )
+                return True
         else:
             logger.error(
                 f"Unexpected API response from Galadriel: \n{response.to_json()}"
             )
+        return False
 
     async def _format_post_prompt(self) -> str:
         # TODO: need to update prompt etc etc
