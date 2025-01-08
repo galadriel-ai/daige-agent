@@ -3,6 +3,7 @@ services:
   agent:
     env_file:
       - .env
+    image: ${DOCKER_USERNAME}/${IMAGE_NAME}:latest
     build:
       context: .
       dockerfile: docker/Dockerfile
