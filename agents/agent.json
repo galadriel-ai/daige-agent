@@ -1,0 +1,33 @@
+{
+  "name": "",
+  "settings": {
+    "model": "",
+    "debug": true
+  },
+  "system": "",
+  "bio": [],
+  "lore": [],
+  "adjectives": [],
+  "topics": [],
+  "style": {
+    "all": [],
+    "chat": [],
+    "post": []
+  },
+  "goals_template": [],
+  "facts_template": [],
+  "knowledge": [],
+  "twitter_profile": {
+    "username": "",
+    "screen_name": "",
+    "bio": "",
+    "nicknames": [
+      ""
+    ]
+  },
+  "search_queries": {
+    "": [
+      ""
+    ]
+  }
+}

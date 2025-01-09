@@ -13,9 +13,9 @@ nano .env
 ```
 
 ## Run an agent
-This takes the agent definition from `agents/daige.json`
+This takes the agent definition from `agents/<agent_name>.json`
 ```shell
-python main.py
+python main.py --agent <agent_name>
 ```
 Can also run in docker
 ```shell

@@ -2,7 +2,13 @@
 
 .env
 venv/
+.venv/
 .mypy_cache/
 
 logs/
 data/
+
+.vscode/
+__pycache__/
+*/__pycache__/
+**/__pycache__/
