@@ -152,5 +152,7 @@ class TwitterClient:
 
 
 def get_iso_datetime(hours_back: int = 0) -> str:
-    value = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=hours_back)
-    return value.strftime('%Y-%m-%dT%H:%M:%S.000Z')
+    value = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(
+        hours=hours_back
+    )
+    return value.strftime("%Y-%m-%dT%H:%M:%S.000Z")
