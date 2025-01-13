@@ -374,7 +374,9 @@ class GaladrielAgent:
             full_header = header + "\n"
         return f"{full_header}{body}\n"
 
-    async def _filter_quote_candidates(self, results: List[SearchResult]) -> List[SearchResult]:
+    async def _filter_quote_candidates(
+        self, results: List[SearchResult]
+    ) -> List[SearchResult]:
         filtered_tweets = [
             tweet
             for tweet in results
@@ -395,7 +397,9 @@ class GaladrielAgent:
             if len(recently_quoted_users) >= QUOTED_USER_REOCCURRENCE_LIMIT:
                 break
         filtered_tweets = [
-            tweet for tweet in filtered_tweets if tweet.username not in recently_quoted_users
+            tweet
+            for tweet in filtered_tweets
+            if tweet.username not in recently_quoted_users
         ]
 
         return filtered_tweets
