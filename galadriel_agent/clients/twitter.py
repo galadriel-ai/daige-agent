@@ -75,26 +75,26 @@ class TwitterClient:
 
     async def search(self) -> List[SearchResult]:
         try:
-            response = await self._make_request(
-                "GET",
-                "tweets/search/recent",
-                params={
-                    "query": SEARCH_QUERY,
-                    "sort_order": "relevancy",
-                    "start_time": get_iso_datetime(MAX_SEARCH_HISTORY_HOURS),
-                    "tweet.fields": "public_metrics,text,author_id,referenced_tweets,attachments",
-                    "expansions": "author_id",
-                    "user.fields": "name,username",
-                    "max_results": 20,
-                },
-            )
+            # response = await self._make_request(
+            #     "GET",
+            #     "tweets/search/recent",
+            #     params={
+            #         "query": SEARCH_QUERY,
+            #         "sort_order": "relevancy",
+            #         "start_time": get_iso_datetime(MAX_SEARCH_HISTORY_HOURS),
+            #         "tweet.fields": "public_metrics,text,author_id,referenced_tweets,attachments",
+            #         "expansions": "author_id",
+            #         "user.fields": "name,username",
+            #         "max_results": 20,
+            #     },
+            # )
             # import json
             # with open("search3.json", "w", encoding="utf-8") as f:
             #     f.write(json.dumps(response))
             #
-            # import json
-            # with open("search3.json", "r", encoding="utf-8") as f:
-            #     response = json.loads(f.read())
+            import json
+            with open("search3.json", "r", encoding="utf-8") as f:
+                response = json.loads(f.read())
 
             formatted_results: List[SearchResult] = []
             for result in response.get("data", []):
