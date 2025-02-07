@@ -3,6 +3,7 @@
 .env
 venv/
 .mypy_cache/
+.pytest_cache/
 
 logs/
 data/

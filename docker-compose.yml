@@ -9,5 +9,5 @@ services:
     volumes:
       - ./logs:/home/appuser/logs
       - ./data:/home/appuser/data
-    command: python main.py
+    command: python agent.py
     restart: unless-stopped
