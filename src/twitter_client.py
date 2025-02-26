@@ -159,7 +159,12 @@ class TwitterClient(AgentInput, AgentOutput):
                 break
 
         for conversation_id in conversations:
-            replies = self.twitter_replies_tool(conversation_id)
+            try:
+                replies = self.twitter_replies_tool(conversation_id)
+            except Exception as e:
+                logger.error(f"Failed to get replies: {e}", exc_info=True)
+                continue
+
             if not len(replies):
                 continue
 
