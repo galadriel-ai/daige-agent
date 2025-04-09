@@ -58,7 +58,7 @@ class TwitterClient(AgentInput, AgentOutput):
         self.event_queue = queue
         # Should be configurable: which kind of flows to run
         asyncio.create_task(self._run_post_loop())
-        asyncio.create_task(self._run_reply_loop())
+        # asyncio.create_task(self._run_reply_loop())
 
     async def send(self, _: Message, response: Message) -> None:
         response_type = response.type
