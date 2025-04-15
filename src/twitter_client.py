@@ -36,8 +36,8 @@ class TwitterClient(AgentInput, AgentOutput):
         self,
         agent: TwitterAgentConfig,
         database_client: DatabaseClient,
-        post_interval_minutes_min: int = 90,
-        post_interval_minutes_max: int = 180,
+        post_interval_minutes_min: int = 22 * 60,
+        post_interval_minutes_max: int = 26 * 60,
         max_conversations_count_for_replies: int = 3,
     ):
         self.agent = agent
